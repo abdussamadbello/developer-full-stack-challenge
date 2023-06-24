@@ -1,6 +1,9 @@
 # Installation
 install:
 	pip install -r requirements.txt
+#run server
+run:
+	uvicorn main:app --reload --log-level info 
 
 # Dev tools
 black-check:
