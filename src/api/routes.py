@@ -106,7 +106,7 @@ def read_author(author_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Author not found")
     return db_author
 
-@books_router.put("/{author_id}")
+@authors_router.put("/{author_id}")
 def update_author(author_id: int, author: schemas.Author, db: Session = Depends(get_db)):
     db_author = db.query(Author).filter(Author.id == author_id).first()
     if db_author is None:
@@ -116,7 +116,7 @@ def update_author(author_id: int, author: schemas.Author, db: Session = Depends(
     db.refresh(db_author)
     return db_author
 
-@books_router.delete("/{author_id}")
+@authors_router.delete("/{author_id}")
 def delete_author(author_id: int, db: Session = Depends(get_db)):
     db_author = db.query(Author).filter(Author.id == author_id).first()
     if db_author is None:
@@ -125,14 +125,14 @@ def delete_author(author_id: int, db: Session = Depends(get_db)):
     db.commit()
     return db_author
 
-@books_router.get("/search/{author_name}")
+@authors_router.get("/search/{author_name}")
 def search_author(author_name: str, db: Session = Depends(get_db)):
     db_author = db.query(Author).filter(Author.name.like("%" + author_name + "%")).all()
     if db_author is None:
         raise HTTPException(status_code=404, detail="Author not found")
     return db_author
 
-@books_router.get("/search/{author_name}/{book_name}")
+@authors_router.get("/search/{author_name}/{book_name}")
 def search_author_book(author_name: str, book_name: str, db: Session = Depends(get_db)):
     db_author = db.query(Author).filter(Author.name.like("%" + author_name + "%")).all()
     if db_author is None:
@@ -142,7 +142,7 @@ def search_author_book(author_name: str, book_name: str, db: Session = Depends(g
         raise HTTPException(status_code=404, detail="Book not found")
     return db_author, db_book
 
-@books_router.get("/number_of_books/{author_name}")
+@authors_router.get("/number_of_books/{author_name}")
 def number_of_books(author_name: str, db: Session = Depends(get_db)):
     db_author = db.query(Author).filter(Author.name.like("%" + author_name + "%")).all()
     if db_author is None:

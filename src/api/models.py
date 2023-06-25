@@ -24,4 +24,5 @@ class Book(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    number_pages = Column(Integer)
+    number_of_pages = Column(Integer)
+    author_id = Column(Integer, ForeignKey("authors.id"))
