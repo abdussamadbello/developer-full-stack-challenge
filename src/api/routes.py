@@ -142,11 +142,12 @@ def search_author_book(author_name: str, book_name: str, db: Session = Depends(g
         raise HTTPException(status_code=404, detail="Book not found")
     return db_author, db_book
 
-@authors_router.get("/number_of_books/{author_name}")
-def number_of_books(author_name: str, db: Session = Depends(get_db)):
-    db_author = db.query(Author).filter(Author.name.like("%" + author_name + "%")).all()
-    if db_author is None:
-        raise HTTPException(status_code=404, detail="Author not found")
-    db_book = db.query(Book).filter(Book.author_id == db_author[0].id).count()
-    return db_book
+@authors_router.get("/number_of_books/{author_id}")
+def number_of_books(author_id: str, db: Session = Depends(get_db)):
+    db_book = db.query(Book).filter(Book.author_id == author_id)
+    if db_book is None:
+        raise HTTPException(status_code=404, detail="Author/book not found")
+    # count number of pages in all books
+    total_pages = sum([book.number_of_pages for book in db_book])
+    return total_pages
 
