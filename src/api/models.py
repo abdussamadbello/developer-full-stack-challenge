@@ -1,6 +1,5 @@
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, MetaData, ForeignKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
-from alembic import op
 
 
 Base = declarative_base(metadata=MetaData())

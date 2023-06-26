@@ -31,6 +31,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 books_router = APIRouter(
     prefix="/books",
     tags=["books"],
+    dependencies=[Depends(verify_token)],
 )
 
 @books_router.get("/", response_model=List[schemas.Book])
@@ -84,6 +85,7 @@ def search_book(book_name: str, db: Session = Depends(get_db)):
 authors_router = APIRouter(
     prefix="/authors",
     tags=["authors"],
+    dependencies=[Depends(verify_token)],
 )
 
 @authors_router.get("/")
