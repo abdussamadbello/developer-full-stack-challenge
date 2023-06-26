@@ -10,9 +10,9 @@ import logging
 
 logger = logging.getLogger("uvicorn.info")
 
-login_router = APIRouter()
+auth_router = APIRouter()
 
-@login_router.post("/login")
+@auth_router.post("/login")
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
     logger.info( user,"user", form_data.username, "username", form_data.password, "password")
@@ -27,6 +27,10 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+@auth_router.get("/token")
+def validate_token(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    return verify_token(token, db)
 
 books_router = APIRouter(
     prefix="/books",
