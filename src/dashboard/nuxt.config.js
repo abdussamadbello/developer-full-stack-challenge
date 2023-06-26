@@ -27,7 +27,10 @@ export default {
     css: [],
 
     // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-    plugins: [],
+    plugins: [
+        { src: '~/axios-interceptor.js', ssr: false },
+        { src: '~/auth-persist.js', ssr: false },
+    ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
     components: true,
@@ -44,6 +47,7 @@ export default {
         ['bootstrap-vue/nuxt', { icons: true, css: true }],
         // https://go.nuxtjs.dev/axios
         '@nuxtjs/axios',
+        'cookie-universal-nuxt',
     ],
 
     publicRuntimeConfig: {
@@ -52,6 +56,9 @@ export default {
         },
     },
 
+    router: {
+        middleware: ['auth'],
+    },
     // Axios module configuration: https://go.nuxtjs.dev/config-axios
     axios: {
         // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
