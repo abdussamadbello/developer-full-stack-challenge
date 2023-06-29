@@ -41,10 +41,12 @@ books_router = APIRouter(
 @books_router.get("/", response_model=List[schemas.Book])
 def read_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     books = db.query(Book).offset(skip).limit(limit).all()
+    for book in books:
+        book.author = get_author_name(book.author_id, db)
     return books
 
 @books_router.post("/", response_model=schemas.Book)
-def create_book(book: schemas.Book, db: Session = Depends(get_db)):
+def create_book(book: schemas.BookCreate, db: Session = Depends(get_db)):
     db_book = Book(**book.dict())
     db.add(db_book)
     db.commit()
@@ -56,6 +58,8 @@ def read_book(book_id: int, db: Session = Depends(get_db)):
     db_book = db.query(Book).filter(Book.id == book_id).first()
     if db_book is None:
         raise HTTPException(status_code=404, detail="Book not found")
+    author = get_author_name(db_book.author_id, db)
+    db_book.author = author
     return db_book
 
 @books_router.put("/{book_id}", response_model=schemas.Book)
@@ -79,12 +83,20 @@ def delete_book(book_id: int, db: Session = Depends(get_db)):
     db.commit()
     return db_book
 
-@books_router.get("/search/{book_name}", response_model=List[schemas.Book])
+@books_router.get("/search/", response_model=List[schemas.Book])
 def search_book(book_name: str, db: Session = Depends(get_db)):
     db_book = db.query(Book).filter(Book.name.like("%" + book_name + "%")).all()
     if db_book is None:
         raise HTTPException(status_code=404, detail="Book not found")
+    for book in db_book:
+        book.author = get_author_name(book.author_id, db)
     return db_book
+
+def get_author_name(author_id: int, db: Session = Depends(get_db)):
+    db_author = db.query(Author).filter(Author.id == author_id).first()
+    if db_author is None:
+        raise HTTPException(status_code=404, detail=f'Author not found for {author_id}')
+    return db_author.name
 
 authors_router = APIRouter(
     prefix="/authors",
@@ -95,6 +107,9 @@ authors_router = APIRouter(
 @authors_router.get("/")
 def read_authors(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     authors = db.query(Author).offset(skip).limit(limit).all()
+    for author in authors:
+        total_pages = number_of_books(author.id, db)
+        author.total_pages_written = total_pages
     return authors
 
 @authors_router.post("/")
@@ -131,29 +146,21 @@ def delete_author(author_id: int, db: Session = Depends(get_db)):
     db.commit()
     return db_author
 
-@authors_router.get("/search/{author_name}")
+@authors_router.get("/search/")
 def search_author(author_name: str, db: Session = Depends(get_db)):
-    db_author = db.query(Author).filter(Author.name.like("%" + author_name + "%")).all()
-    if db_author is None:
+    authors = db.query(Author).filter(Author.name.like("%" + author_name + "%")).all()
+    if authors is None:
         raise HTTPException(status_code=404, detail="Author not found")
-    return db_author
-
-@authors_router.get("/search/{author_name}/{book_name}")
-def search_author_book(author_name: str, book_name: str, db: Session = Depends(get_db)):
-    db_author = db.query(Author).filter(Author.name.like("%" + author_name + "%")).all()
-    if db_author is None:
-        raise HTTPException(status_code=404, detail="Author not found")
-    db_book = db.query(Book).filter(Book.name.like("%" + book_name + "%")).all()
-    if db_book is None:
-        raise HTTPException(status_code=404, detail="Book not found")
-    return db_author, db_book
+    for author in authors:
+        total_pages = number_of_books(author.id, db)
+        author.total_pages_written = total_pages
+    return authors
 
 @authors_router.get("/number_of_books/{author_id}")
 def number_of_books(author_id: str, db: Session = Depends(get_db)):
     db_book = db.query(Book).filter(Book.author_id == author_id)
     if db_book is None:
-        raise HTTPException(status_code=404, detail="Author/book not found")
-    # count number of pages in all books
+        return 0
     total_pages = sum([book.number_of_pages for book in db_book])
     return total_pages
 

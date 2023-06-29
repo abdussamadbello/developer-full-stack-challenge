@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 
 class User(BaseModel):
@@ -14,7 +15,7 @@ class Token(BaseModel):
     token_type: str
 
 class Author(BaseModel):
-    id: int
+    id: Optional[int]
     name: str = Field(..., description="This field is required")
 
     class Config:
@@ -25,6 +26,15 @@ class Book(BaseModel):
     name: str = Field(..., description="This field is required")
     author_id: int = Field(..., description="This field is required")
     number_of_pages: int
-    
+    author: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+class BookCreate(BaseModel):
+    name: str = Field(..., description="This field is required")
+    author_id: int = Field(..., description="This field is required")
+    number_of_pages: int
+
     class Config:
         orm_mode = True
