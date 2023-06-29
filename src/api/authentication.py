@@ -15,7 +15,7 @@ logger = logging.getLogger("uvicorn.info")
 
 SECRET_KEY = "YOUR_SECRET_KEY"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 3000
 
 class TokenData(User):
     username: Optional[str] = None
