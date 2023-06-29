@@ -11,7 +11,7 @@
                         <b-nav-item to="/authors">Authors</b-nav-item>
                         <b-nav-item to="/books">Books</b-nav-item>
                         <b-nav-item to="/login">Login</b-nav-item>
-                        <b-nav-item to="/logout">Logout</b-nav-item>
+                        <b-nav-item @click="logout">Logout</b-nav-item>
                     </b-navbar-nav>
                 </b-collapse>
             </div>
@@ -25,5 +25,11 @@
 <script>
 export default {
     name: 'DefaultLayout',
+    methods: {
+        logout() {
+            this.$store.dispatch('auth/clearToken');
+            this.$router.push('/login');
+        },
+    },
 };
 </script>
