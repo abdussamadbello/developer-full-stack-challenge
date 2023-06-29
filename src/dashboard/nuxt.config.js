@@ -23,6 +23,8 @@ export default {
         link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
 
+    layout: 'default',
+
     // Global CSS: https://go.nuxtjs.dev/config-css
     css: [],
 
