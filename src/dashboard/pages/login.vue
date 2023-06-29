@@ -1,8 +1,7 @@
 <template>
-    <b-container align-v="center" class="d-flex fluid align-items-center">
+    <div class="row d-flex justify-content-center align-items-center mt-4">
         <b-card class="w-50">
             <b-card-title class="text-center">Login</b-card-title>
-
             <b-form @submit.prevent="submitForm">
                 <b-form-group id="input-group-1" label="Username:" label-for="input-1">
                     <b-form-input id="input-1" v-model="username" required placeholder="Enter username"></b-form-input>
@@ -21,7 +20,7 @@
                 <b-button type="submit" variant="primary" class="w-100">Submit</b-button>
             </b-form>
         </b-card>
-    </b-container>
+    </div>
 </template>
 
 <script>
