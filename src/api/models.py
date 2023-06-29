@@ -15,13 +15,13 @@ class User(Base):
 class Author(Base):
     __tablename__ = "authors"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String)
 
 class Book(Base):
     __tablename__ = "books"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String)
     number_of_pages = Column(Integer)
     author_id = Column(Integer, ForeignKey("authors.id"))
