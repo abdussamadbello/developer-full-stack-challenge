@@ -4,8 +4,16 @@
             <b-form-group label="Name" label-for="name">
                 <b-form-input id="name" v-model="tempBook.name" required></b-form-input>
             </b-form-group>
-            <b-form-group label="Author" label-for="author">
-                <b-form-input id="author" v-model="tempBook.author" required></b-form-input>
+            <b-form-group label="Authors" label-for="author">
+                <Treeselect
+                    id="author"
+                    v-model="author"
+                    :options="authorOptions"
+                    placeholder="Select authors"
+                    :clear-on-select="true"
+                    :close-on-select="true"
+                    :searchable="true"
+                ></Treeselect>
             </b-form-group>
             <b-form-group label="Number of Pages" label-for="pages">
                 <b-form-input type="number" id="pages" v-model="tempBook.number_of_pages" required></b-form-input>
@@ -38,9 +46,11 @@ export default {
         return {
             tempBook: {
                 name: '',
-                author: '',
+                author: null,
                 pages: 0,
             },
+            author: null,
+            authorOptions: [],
         };
     },
     watch: {
@@ -49,16 +59,21 @@ export default {
             handler() {
                 if (this.book) {
                     this.tempBook = { ...this.book };
+                    this.author = this.book.author_id;
                 } else {
                     this.resetForm();
                 }
             },
         },
     },
+    mounted() {
+        this.getAuthors();
+    },
     methods: {
         saveBook() {
-            const { id, author_id, name, author, number_of_pages } = this.tempBook;
-            const book = { id, author_id, name, author, number_of_pages };
+            const { id, name, number_of_pages } = this.tempBook;
+            const author_id = this.author;
+            const book = { id, author_id, name, number_of_pages };
 
             this.$emit('save-book', book);
         },
@@ -66,7 +81,14 @@ export default {
             this.$emit('close-modal');
         },
         resetForm() {
-            this.tempBook = { name: '', author: '', number_of_pages: 0 };
+            this.tempBook = { name: '', author: null, number_of_pages: 0 };
+        },
+        async getAuthors() {
+            const { data } = await this.$axios.get('/authors');
+            this.authorOptions = data.map((author) => ({
+                id: author.id,
+                label: author.name,
+            }));
         },
     },
 };

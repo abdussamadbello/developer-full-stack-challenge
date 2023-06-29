@@ -32,6 +32,7 @@ export default {
     plugins: [
         { src: '~/axios-interceptor.js', ssr: false },
         { src: '~/auth-persist.js', ssr: false },
+        { src: '~/plugins/vuetreeselect.js' },
     ],
 
     // Auto import components: https://go.nuxtjs.dev/config-components
